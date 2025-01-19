@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>العالمي ستور</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(120deg, #2079de, #14a0b0, #0bd86a);
+            color: #ffffff;
+            direction: rtl;
+            overflow-y: auto;
+            animation: fadeIn 1s ease-out;
+        }
+
+        header {
+            background-color: #4bf9003e;
+            color: #193282;
+            text-align: center;
+            padding: 20px;
+            font-size: 2.5em;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.66);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        nav {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        nav button {
+            padding: 12px 25px;
+            margin: 10px;
+            font-size: 1.3em;
+            background-color: #eceeee;
+            color: #000000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        nav button.active {
+            background-color: #1fee04;
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(7, 174, 246, 0.6);
+        }
+
+        nav button:hover {
+            background-color: #03fa62;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(34, 255, 255, 0.7);
+        }
+
+        section {
+            display: none;
+            max-width: 800px;
+            margin: 20px auto;
+            background: rgb(1, 75, 109);
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.683);
+            border-radius: 10px;
+            animation: fadeInSection 1s ease-out;
+        }
+
+        section.active {
+            display: block;
+        }
+
+        input, button {
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 1.2em;
+            border-radius: 5px;
+            border: 1px solid #1dfe55;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        input:focus, button:focus {
+            border-color: #d0ff14;
+            background-color: #00f710;
+            outline: none;
+        }
+
+        input[type="text"], input[type="number"] {
+            background-color: #d6f9f8;
+            color: #000000;
+            border: 1px solid #21ec50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            animation: fadeInTable 1s ease-out;
+        }
+
+        th, td {
+            border: 1px solid #000000;
+            text-align: center;
+            padding: 12px;
+        }
+
+        th {
+            background-color: #000000;
+            color: #f3f5f7;
+        }
+
+        .refunded {
+            text-decoration: line-through;
+            color: #ff2727;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #ffffff00;
+            color: #000000;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            animation: fadeInFooter 1.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInSection {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInTable {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInFooter {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <header>العالمي ستور</header>
+    <nav>
+        <button onclick="showSection('salesSection')" class="active">البيع</button>
+        <button onclick="showSection('historySection')">المبيعات</button>
+    </nav>
+
+    <!-- قسم البيع -->
+    <section id="salesSection" class="active">
+        <h2>البيع</h2>
+        <input type="text" id="sellProductName" placeholder="اسم المنتج">
+        <input type="number" id="sellProductPrice" placeholder="السعر المباع">
+        <button onclick="sellProduct()">إضافة المنتج</button>
+        <h3>المنتجات المباعة</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم المنتج</th>
+                    <th>السعر المباع</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="soldProductsTable"></tbody>
+        </table>
+        <h3 id="totalSales">إجمالي البيع: 0 ج.م</h3>
+        <button onclick="recordSales()">تسجيل المبيعات</button>
+    </section>
+
+    <!-- قسم المبيعات -->
+    <section id="historySection">
+        <h2>المبيعات</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>التاريخ</th>
+                    <th>الإجمالي</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="salesHistoryTable"></tbody>
+        </table>
+    </section>
+
+    <footer>
+        Designed by Eng Ahmed Sherif
+    </footer>
+
+    <script>
+        let soldProducts = JSON.parse(localStorage.getItem('soldProducts')) || [];
+        let salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || {};
+
+        const saveData = () => {
+            localStorage.setItem('soldProducts', JSON.stringify(soldProducts));
+            localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateSoldProducts();
+            updateSalesHistory();
+
+            document.addEventListener("keypress", (event) => {
+                if (event.key === "Enter") {
+                    sellProduct();
+                }
+            });
+        });
+
+        function showSection(sectionId) {
+            document.querySelectorAll("section").forEach(section => section.classList.remove("active"));
+            document.querySelectorAll("nav button").forEach(button => button.classList.remove("active"));
+            document.getElementById(sectionId).classList.add("active");
+            event.target.classList.add("active");
+        }
+
+        function sellProduct() {
+            const name = document.getElementById("sellProductName").value.trim();
+            const price = parseFloat(document.getElementById("sellProductPrice").value);
+
+            if (name && price) {
+                soldProducts.push({ name, price, refunded: false });
+                document.getElementById("sellProductName").value = "";
+                document.getElementById("sellProductPrice").value = "";
+                updateSoldProducts();
+                saveData();
+            } else {
+                alert("يرجى ملء جميع الحقول.");
+            }
+        }
+
+        function updateSoldProducts() {
+            const table = document.getElementById("soldProductsTable");
+            table.innerHTML = "";
+            let total = 0;
+
+            soldProducts.forEach((product, index) => {
+                if (!product.refunded) total += product.price;
+                const row = `<tr class="${product.refunded ? "refunded" : ""}">
+                    <td>${product.name}</td>
+                    <td>${product.price}</td>
+                    <td>
+                        ${!product.refunded ? `<button onclick="refundProduct(${index})">استرجاع</button>` : ""}
+                        ${product.refunded ? `<button onclick="deleteProduct(${index})">حذف</button>` : ""}
+                    </td>
+                </tr>`;
+                table.innerHTML += row;
+            });
+
+            document.getElementById("totalSales").innerText = `إجمالي البيع: ${total} ج.م`;
+        }
+
+        function updateSalesHistory() {
+            const table = document.getElementById("salesHistoryTable");
+            table.innerHTML = "";
+
+            for (const [date, total] of Object.entries(salesHistory)) {
+                const row = `<tr>
+                    <td>${date}</td>
+                    <td>${total} ج.م</td>
+                    <td><button onclick="deleteSalesDay('${date}')">حذف اليوم</button></td>
+                </tr>`;
+                table.innerHTML += row;
+            }
+        }
+
+        function recordSales() {
+            const password = prompt("أدخل الرقم السري لتسجيل المبيعات:");
+
+            if (password === "5050") {
+                const today = new Date().toLocaleDateString();
+                const total = soldProducts.reduce((sum, product) => product.refunded ? sum : sum + product.price, 0);
+
+                if (total > 0) {
+                    salesHistory[today] = (salesHistory[today] || 0) + total;
+                    soldProducts = soldProducts.filter(product => product.refunded);
+                    updateSalesHistory();
+                    updateSoldProducts();
+                    saveData();
+                    alert("تم تسجيل المبيعات بنجاح!");
+                } else {
+                    alert("لا يوجد مبيعات لتسجيلها.");
+                }
+            } else {
+                alert("الرقم السري غير صحيح.");
+            }
+        }
+
+        function refundProduct(index) {
+            const password = prompt("أدخل كلمة المرور لاسترجاع المنتج:");
+
+            if (password === "1234") {
+                soldProducts[index].refunded = true;
+                updateSoldProducts();
+                saveData();
+            } else {
+                alert("كلمة المرور غير صحيحة.");
+            }
+        }
+
+        function deleteProduct(index) {
+            const password = prompt("أدخل كلمة المرور للحذف النهائي:");
+
+            if (password === "5050") {
+                soldProducts.splice(index, 1);
+                updateSoldProducts();
+                saveData();
+            } else {
+                alert("كلمة المرور غير صحيحة.");
+            }
+        }
+
+        function deleteSalesDay(date) {
+            const password = prompt("أدخل الرقم السري لحذف اليوم:");
+
+            if (password === "5050") {
+                delete salesHistory[date];
+                updateSalesHistory();
+                saveData();
+                alert("تم حذف اليوم بنجاح!");
+            } else {
+                alert("الرقم السري غير صحيح.");
+            }
+        }
+    </script>
+</body>
+</html>

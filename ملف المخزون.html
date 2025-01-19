@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>العالمي ستور</title>
+    <style>
+        /* الكود الأصلي */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 2.5rem;
+            color: #ffcc00;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #004d66;
+            padding: 10px;
+            margin-bottom: 20px;
+            animation: slideDown 1s ease-in-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        nav button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #0072ff;
+            color: white;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        nav button.active {
+            background-color: #ff6600;
+        }
+
+        nav button:hover {
+            background-color: #005bb5;
+            transform: scale(1.1);
+        }
+
+        section {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        section.active {
+            display: block;
+        }
+
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        input {
+            width: 60%;
+            max-width: 300px;
+        }
+
+        button {
+            background-color: #ff6600;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #e65c00;
+            transform: scale(1.1);
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 80%;
+            background-color: #fff;
+            color: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #0072ff;
+            color: white;
+            padding: 10px;
+        }
+
+        td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #fff;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        .delete-btn, .edit-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .delete-btn:hover, .edit-btn:hover {
+            background-color: darkred;
+            transform: scale(1.1);
+        }
+
+        .edit-btn {
+            background-color: green;
+        }
+
+        .edit-btn:hover {
+            background-color: darkgreen;
+        }
+
+        .delete-sale-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .delete-sale-btn:hover {
+            background-color: darkred;
+            transform: scale(1.1);
+        }
+
+        #stockSearch {
+            width: 80%;
+            margin: 10px auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        #suggestionList {
+            position: absolute;
+            background-color: #fff;
+            color: #333;
+            border-radius: 5px;
+            padding: 10px;
+            max-width: 300px;
+            display: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        #suggestionList div {
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        #suggestionList div:hover {
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+    <h1>العالمي ستور</h1>
+    <nav>
+        <button id="addTab" onclick="showTab('addProductSection')" class="active">إضافة المنتجات</button>
+        <button id="stockTab" onclick="showTab('stockSection')">المخزون</button>
+        <button id="sellTab" onclick="showTab('sellSection')">البيع</button>
+        <button id="salesTab" onclick="showTab('salesSection')">المبيعات</button>
+    </nav>
+
+    <!-- إضافة المنتجات -->
+    <section id="addProductSection" class="active">
+        <h2>إضافة منتج جديد</h2>
+        <input type="text" id="productName" placeholder="اسم المنتج" onkeypress="if(event.key === 'Enter') addProduct()">
+        <input type="number" id="productPrice" placeholder="السعر" onkeypress="if(event.key === 'Enter') addProduct()">
+        <input type="number" id="productQuantity" placeholder="عدد القطع" onkeypress="if(event.key === 'Enter') addProduct()">
+        <button onclick="addProduct()">إضافة المنتج</button>
+    </section>
+
+    <!-- المخزون -->
+    <section id="stockSection">
+        <h2>المخزون</h2>
+        <input type="text" id="stockSearch" placeholder="ابحث عن المنتج من هنا" oninput="filterStock()">
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم المنتج</th>
+                    <th>السعر</th>
+                    <th>الكمية</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="stockTable">
+                <!-- يتم عرض المنتجات هنا -->
+            </tbody>
+        </table>
+    </section>
+
+    <!-- البيع -->
+    <section id="sellSection">
+        <h2>البيع</h2>
+        <div style="position: relative;">
+            <input type="text" id="searchProduct" placeholder="البحث عن منتج" oninput="showSuggestions()">
+            <div id="suggestionList"></div>
+        </div>
+        <input type="number" id="sellQuantity" placeholder="الكمية" onkeypress="if(event.key === 'Enter') sellProduct()">
+        <button onclick="sellProduct()">بيع المنتج</button>
+        <button onclick="recordSales()">تسجيل المبيعات</button>
+        <h3>المنتجات المباعة</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم المنتج</th>
+                    <th>السعر</th>
+                    <th>الكمية</th>
+                    <th>الإجمالي</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="soldTable">
+                <!-- يتم عرض المبيعات هنا -->
+            </tbody>
+        </table>
+        <h3 id="totalSales">الإجمالي: 0 ج.م</h3>
+    </section>
+
+    <!-- المبيعات -->
+    <section id="salesSection">
+        <h2>المبيعات</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>التاريخ</th>
+                    <th>الإجمالي</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="salesTable">
+                <!-- يتم عرض المبيعات بالتاريخ هنا -->
+            </tbody>
+        </table>
+    </section>
+
+    <footer>
+        Designed by Eng Ahmed Sherif
+    </footer>
+
+    <script>
+        let products = JSON.parse(localStorage.getItem("products")) || [];
+        let soldProducts = [];
+        let salesRecords = JSON.parse(localStorage.getItem("salesRecords")) || [];
+
+        function saveData() {
+            localStorage.setItem("products", JSON.stringify(products));
+            localStorage.setItem("salesRecords", JSON.stringify(salesRecords));
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll("section").forEach(section => section.classList.remove("active"));
+            document.querySelectorAll("nav button").forEach(button => button.classList.remove("active"));
+            document.getElementById(tabId).classList.add("active");
+            document.getElementById(tabId.replace("Section", "Tab")).classList.add("active");
+        }
+
+        function addProduct() {
+            const name = document.getElementById("productName").value.trim();
+            const price = parseFloat(document.getElementById("productPrice").value);
+            const quantity = parseInt(document.getElementById("productQuantity").value, 10);
+
+            if (name && price && quantity) {
+                products.push({ name, price, quantity });
+                saveData();
+                document.getElementById("productName").value = "";
+                document.getElementById("productPrice").value = "";
+                document.getElementById("productQuantity").value = "";
+                updateStock();
+                alert("تمت إضافة المنتج بنجاح!");
+            } else {
+                alert("يرجى ملء جميع الحقول.");
+            }
+        }
+
+        function updateStock() {
+            const table = document.getElementById("stockTable");
+            table.innerHTML = "";
+            products.forEach((product, index) => {
+                const row = `<tr>
+                    <td>${product.name}</td>
+                    <td>${product.price}</td>
+                    <td>${product.quantity}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editPrice(${index})">تعديل السعر</button>
+                        <button class="edit-btn" onclick="editQuantity(${index})">تعديل الكمية</button>
+                        <button class="delete-btn" onclick="deleteProduct(${index})">حذف</button>
+                    </td>
+                </tr>`;
+                table.innerHTML += row;
+            });
+        }
+
+        function filterStock() {
+            const search = document.getElementById("stockSearch").value.toLowerCase();
+            const table = document.getElementById("stockTable");
+            table.innerHTML = "";
+            products.filter(product => product.name.toLowerCase().startsWith(search)).forEach((product, index) => {
+                const row = `<tr>
+                    <td>${product.name}</td>
+                    <td>${product.price}</td>
+                    <td>${product.quantity}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editPrice(${index})">تعديل السعر</button>
+                        <button class="edit-btn" onclick="editQuantity(${index})">تعديل الكمية</button>
+                        <button class="delete-btn" onclick="deleteProduct(${index})">حذف</button>
+                    </td>
+                </tr>`;
+                table.innerHTML += row;
+            });
+        }
+
+        function showSuggestions() {
+            const searchTerm = document.getElementById("searchProduct").value.toLowerCase();
+            const suggestionList = document.getElementById("suggestionList");
+
+            if (searchTerm) {
+                const suggestions = products.filter(product => product.name.toLowerCase().startsWith(searchTerm));
+                suggestionList.innerHTML = suggestions.map(product => `<div onclick="selectSuggestion('${product.name}')">${product.name}</div>`).join('');
+                suggestionList.style.display = "block";
+            } else {
+                suggestionList.style.display = "none";
+            }
+        }
+
+        function selectSuggestion(name) {
+            document.getElementById("searchProduct").value = name;
+            document.getElementById("suggestionList").style.display = "none";
+        }
+
+        function sellProduct() {
+            const name = document.getElementById("searchProduct").value.trim();
+            const quantity = parseInt(document.getElementById("sellQuantity").value, 10);
+            const productIndex = products.findIndex(product => product.name === name);
+
+            if (productIndex !== -1 && quantity > 0 && products[productIndex].quantity >= quantity) {
+                products[productIndex].quantity -= quantity;
+                const total = products[productIndex].price * quantity;
+                soldProducts.push({ name, price: products[productIndex].price, quantity, total });
+                updateSoldTable();
+                updateStock();
+                saveData();
+                document.getElementById("searchProduct").value = "";
+                document.getElementById("sellQuantity").value = "";
+            } else {
+                alert("المنتج غير متوفر أو الكمية غير كافية.");
+            }
+        }
+
+        function updateSoldTable() {
+            const table = document.getElementById("soldTable");
+            table.innerHTML = "";
+            let totalSales = 0;
+            soldProducts.forEach((product, index) => {
+                totalSales += product.total;
+                const row = `<tr>
+                    <td>${product.name}</td>
+                    <td>${product.price}</td>
+                    <td>${product.quantity}</td>
+                    <td>${product.total}</td>
+                    <td><button class="delete-sale-btn" onclick="deleteSoldProduct(${index})">حذف</button></td>
+                </tr>`;
+                table.innerHTML += row;
+            });
+            document.getElementById("totalSales").innerText = `الإجمالي: ${totalSales} ج.م`;
+        }
+
+        function deleteSoldProduct(index) {
+            soldProducts.splice(index, 1);
+            updateSoldTable();
+        }
+
+        function recordSales() {
+            const password = prompt("أدخل كلمة السر:");
+            if (password === "5050") {
+                const today = new Date().toLocaleDateString('en-US');
+                const totalSales = soldProducts.reduce((sum, product) => sum + product.total, 0);
+
+                salesRecords.push({ date: today, total: totalSales });
+                soldProducts = [];
+                saveData();
+                updateSoldTable();
+                updateSalesTable();
+            } else {
+                alert("كلمة السر غير صحيحة.");
+            }
+        }
+
+        function updateSalesTable() {
+            const table = document.getElementById("salesTable");
+            table.innerHTML = "";
+            salesRecords.forEach((record, index) => {
+                const row = `<tr>
+                    <td>${record.date}</td>
+                    <td>${record.total}</td>
+                    <td><button class="delete-sale-btn" onclick="deleteSalesRecord(${index})">حذف</button></td>
+                </tr>`;
+                table.innerHTML += row;
+            });
+        }
+
+        function deleteSalesRecord(index) {
+            const password = prompt("أدخل كلمة السر:");
+            if (password === "5050") {
+                salesRecords.splice(index, 1);
+                saveData();
+                updateSalesTable();
+            } else {
+                alert("كلمة السر غير صحيحة.");
+            }
+        }
+
+        function editPrice(index) {
+            const password = prompt
+            ("أدخل كلمة السر:");
+            if (password === "5050") {
+                const newPrice = prompt("أدخل السعر الجديد:");
+                if (!isNaN(newPrice) && newPrice > 0) {
+                    products[index].price = parseFloat(newPrice);
+                    saveData();
+                    updateStock();
+                    alert("تم تعديل السعر بنجاح!");
+                } else {
+                    alert("السعر غير صالح.");
+                }
+            } else {
+                alert("كلمة السر غير صحيحة.");
+            }
+        }
+
+        function editQuantity(index) {
+            const password = prompt("أدخل كلمة السر:");
+            if (password === "5050") {
+                const newQuantity = prompt("أدخل الكمية الجديدة:");
+                if (!isNaN(newQuantity) && newQuantity > 0) {
+                    products[index].quantity = parseInt(newQuantity, 10);
+                    saveData();
+                    updateStock();
+                    alert("تم تعديل الكمية بنجاح!");
+                } else {
+                    alert("الكمية غير صالحة.");
+                }
+            } else {
+                alert("كلمة السر غير صحيحة.");
+            }
+        }
+
+        function deleteProduct(index) {
+            const password = prompt("أدخل كلمة السر:");
+            if (password === "5050") {
+                products.splice(index, 1);
+                saveData();
+                updateStock();
+                alert("تم حذف المنتج بنجاح!");
+            } else {
+                alert("كلمة السر غير صحيحة.");
+            }
+        }
+
+        function init() {
+            updateStock();
+            updateSalesTable();
+        }
+
+        init();
+    </script>
+</body>
+</html>
